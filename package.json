@@ -1,0 +1,17 @@
+{
+  "name": "jsalgo",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "start:backend": "bun --minify run src/backend/index.ts",
+    "build:front": "bun --minify build src/frontend/index.ts --outdir www/js"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
