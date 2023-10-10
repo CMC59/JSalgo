@@ -1,22 +1,20 @@
 import { join } from "node:path"
 import { WatchEventType, watch, FSWatcher } from "node:fs"
-import type { Server, ServerWebSocket } from "bun";
+import type { ServerWebSocket, Server } from "bun"
 
 const port: number = parseInt(process.argv[2])
-const baseDir = join(import.meta.dir, "..", "..", "www");
-
+const baseDir = join(import.meta.dir, "..", "..", "www")
 
 const wsClients: Set<ServerWebSocket> = new Set()
 const watcher: FSWatcher = watch(
     baseDir,
-    {recursive: true},
+    { recursive: true },
     (event: WatchEventType, data: string | Error | undefined) => {
-        console.log("Something changed:", data);
+        console.log("Something changed:", data)
         wsClients.forEach((ws: ServerWebSocket) => ws.send("reload"))
     }
 )
-process.on("SIGINT", (à => watcher.close()))
-// console.log(typeof port, port);
+process.on("SIGINT", () => watcher.close())
 
 const server = Bun.serve({
     port: port,
@@ -44,10 +42,11 @@ const server = Bun.serve({
             wsClients.delete(ws)
         },
         message(ws: ServerWebSocket, message: string) {
-            console.log(`Message received from "${ws.remoteAddress}": "${message}`);
-            ws.send("Well received")
+					if (message !== "ping") {
+						console.log(`Message received from "${ws.remoteAddress}": "${message}"`)
+					}
+          ws.send("Well received")
         }
     }
 })
 console.log(`HTTP Server listening on ${server.hostname}:${server.port}`)
-
